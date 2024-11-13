@@ -127,9 +127,98 @@ app.get('/recipes/author/:authorName', async (req, res) => {
     }
 })
 
+//Q9
+
+async function readByDifficulty(difficulty) {
+    try {
+    const getRecipe = await Recipe.find({difficulty: difficulty});
+    return getRecipe
+
+    } catch (error) {
+        throw error;
+    }
+    
+}
+
+app.get('/recipes/difficulty/:difficultyMode', async (req, res) => {
+    try {
+        const readRecipe = await readByDifficulty(req.params.difficultyMode);
+
+        if(readRecipe){
+            res.json(readRecipe)
+        }else{
+            res.status(404).json({error: 'Recipe not found.'});
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch data'})
+    }
+})
+
+
+
+//Q10, 11
+
+async function updateByDifficulty(titleToUpdate, dataToUpdate) {
+    try {
+        const updatedRecipe = await Recipe.findOneAndUpdate({title: titleToUpdate}, dataToUpdate,  {new: true});
+        return updatedRecipe;
+
+    } catch (error) {
+        console.log(error)
+        throw error;
+        
+    }
+}
+
+
+app.post('/recipes/difficultyUpdate/:difficulty', async(req, res) => {
+    try {
+        const updatedRecipe = await updateByDifficulty(req.params.difficulty, req.body);
+
+        if(updatedRecipe){
+            res.json(updatedRecipe)
+        }else{
+            res.status(404).json({error: 'Recipe not updated.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch data.'})
+    }
+})
+
+
+//Q12
+
+async function deleteRecipe(recipeId) {
+    try {
+        const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
+
+        return deletedRecipe;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+app.delete('/recipes/deleteRecipe/:recId', async(req, res) => {
+    try {
+        const deletedRecipe = await deleteRecipe(req.params.recId);
+
+        if(deletedRecipe){
+            res.status(200).json({message: 'Recipe deleted successfully.'})
+        }else{
+            res.status(404).json({error: 'Recipe not found'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to delete recipe.'});        
+    }
+})
 
 const PORT = 3000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
 })
+
+// 67338e4412f62c422276bc76
+
+// 67338e6412f62c422276bc78
